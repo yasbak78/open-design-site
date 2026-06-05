@@ -130,11 +130,35 @@
   }
   .wire-contrib span { opacity: 0.5; }
   @keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    to { transform: translateX(calc(-100%)); }
   }
 
-  /* Official sources */
+  /* ── Scroll reveal animations (from original) ── */
+  [data-reveal] {
+    opacity: 0;
+    translate: 0px 28px;
+    transition: opacity .9s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0ms),
+                translate .9s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0ms),
+                scale .9s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0ms);
+    will-change: opacity, translate, scale;
+  }
+  [data-reveal="left"] { translate: -36px; }
+  [data-reveal="right"] { translate: 36px; }
+  [data-reveal="scale"] { translate: 0px; scale: 0.96; }
+  [data-reveal="rise-lg"] { translate: 0px 64px; scale: 0.985; }
+  [data-reveal][data-revealed="true"] { opacity: 1; translate: 0px; scale: 1; }
+  .cards > .card[data-reveal]:nth-child(1) { --reveal-delay: 0ms; }
+  .cards > .card[data-reveal]:nth-child(2) { --reveal-delay: 90ms; }
+  .cards > .card[data-reveal]:nth-child(3) { --reveal-delay: .18s; }
+  .cards > .card[data-reveal]:nth-child(4) { --reveal-delay: .27s; }
+  .section[data-reveal]:nth-child(1) { --reveal-delay: 0ms; }
+  .section[data-reveal]:nth-child(2) { --reveal-delay: .12s; }
+  .section[data-reveal]:nth-child(3) { --reveal-delay: .24s; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal] { opacity: 1 !important; translate: 0px !important; scale: 1 !important; transition: none !important; }
+  }
+
+  /* ── Responsive ── */
   .sources {
     max-width: 1200px; margin: 0 auto;
     padding: 40px 24px;
@@ -277,13 +301,13 @@
 
 <!-- Hero -->
 <section class="hero">
-  <h1><em>Open Design</em><br>Open-source, local, agent-driven design platform.</h1>
-  <p class="hero-sub">An agent-native alternative to Figma and Claude Design.<br>Desktop-first, connected to 16 coding agents, 150 design systems, Apache-2.0.</p>
-  <div class="hero-ctas">
+  <h1 data-reveal="rise-lg"><em>Open Design</em><br>Open-source, local, agent-driven design platform.</h1>
+  <p class="hero-sub" data-reveal>An agent-native alternative to Figma and Claude Design.<br>Desktop-first, connected to 16 coding agents, 150 design systems, Apache-2.0.</p>
+  <div class="hero-ctas" data-reveal>
     <a href="https://github.com/nexu-io/open-design" class="cta-primary" aria-label="Star us on GitHub">Star us on GitHub →</a>
     <a href="#download" class="cta-secondary" aria-label="Download desktop app">Download desktop ↓</a>
   </div>
-  <div class="hero-stats">
+  <div class="hero-stats" data-reveal>
     <div class="stat"><div class="stat-num">155</div><div class="stat-label">Skills · Shippable</div></div>
     <div class="stat"><div class="stat-num">150</div><div class="stat-label">Systems · Portable</div></div>
     <div class="stat"><div class="stat-num">12</div><div class="stat-label">CLI · Bring Your Agent</div></div>
@@ -323,7 +347,7 @@
 </section>
 
 <!-- Official Sources -->
-<section class="sources" aria-label="Official Open Design sources">
+<section class="sources" data-reveal aria-label="Official Open Design sources">
   <div class="sources-label">OFFICIAL SOURCE · Nº 00</div>
   <div class="sources-grid">
     <a href="https://open-design.ai" class="source-item">
@@ -354,7 +378,7 @@
 </section>
 
 <!-- Section I: About / Manifesto -->
-<section class="section" id="about">
+<section class="section" id="about" data-reveal="rise-lg">
   <div class="section-meta">
     <span>I.</span>
     <span>ABOUT / MANIFESTO</span>
@@ -376,7 +400,7 @@
 </section>
 
 <!-- Section II: Capabilities -->
-<section class="section" id="capabilities">
+<section class="section" id="capabilities" data-reveal="rise-lg">
   <div class="section-meta">
     <span>II.</span>
     <span>CAPABILITIES · SKILLS · SYSTEMS</span>
@@ -388,19 +412,19 @@
   <h2>Skills, systems, and surfaces <em>for creative</em> intelligence.</h2>
   <p>We blend human taste with whichever agent you already trust to ship interfaces, decks, and editorial pages that feel intentional, expressive, and alive.</p>
   <div class="cap-grid">
-    <div class="cap-card">
+    <div class="cap-card" data-reveal>
       <div class="cap-num">01</div>
       <div class="cap-tag">SKILLS</div>
       <h3>Skills,<br>not plugins</h3>
       <p>155 file-based SKILL.md bundles. Drop a folder in, restart the daemon, it appears.</p>
     </div>
-    <div class="cap-card">
+    <div class="cap-card" data-reveal>
       <div class="cap-num">02</div>
       <div class="cap-tag">SYSTEMS</div>
       <h3>Design Systems<br>as Markdown</h3>
       <p>150 portable DESIGN.md systems — Linear, Vercel, Stripe, Apple, Cursor, Figma…</p>
     </div>
-    <div class="cap-card">
+    <div class="cap-card" data-reveal>
       <div class="cap-num">03</div>
       <div class="cap-tag">ADAPTERS</div>
       <h3>12 Agent<br>Adapters</h3>
@@ -415,7 +439,7 @@
         <span class="agent-tag">Qwen</span>
       </div>
     </div>
-    <div class="cap-card">
+    <div class="cap-card" data-reveal>
       <div class="cap-num">04</div>
       <div class="cap-tag">BYOK</div>
       <h3>BYOK at<br>every layer</h3>
@@ -425,7 +449,7 @@
 </section>
 
 <!-- Section III: Workflow -->
-<section class="section" id="workflow">
+<section class="section" id="workflow" data-reveal="rise-lg">
   <div class="section-meta">
     <span>III.</span>
     <span>WORKFLOW · THE LOOP</span>
@@ -440,7 +464,7 @@
 </section>
 
 <!-- Section IV: Agent Adapters Deep Dive -->
-<section class="section" id="agent">
+<section class="section" id="agent" data-reveal="rise-lg">
   <div class="section-meta">
     <span>IV.</span>
     <span>AGENT ADAPTERS</span>
@@ -455,7 +479,7 @@
 </section>
 
 <!-- Section V: Design Systems -->
-<section class="section" id="systems">
+<section class="section" id="systems" data-reveal="rise-lg">
   <div class="section-meta">
     <span>V.</span>
     <span>DESIGN SYSTEMS</span>
@@ -470,7 +494,7 @@
 </section>
 
 <!-- Section VI: Community -->
-<section class="section" id="community">
+<section class="section" id="community" data-reveal="rise-lg">
   <div class="section-meta">
     <span>VI.</span>
     <span>COMMUNITY</span>
@@ -485,7 +509,7 @@
 </section>
 
 <!-- Section VII: Get Started -->
-<section class="section" id="get-started">
+<section class="section" id="get-started" data-reveal="rise-lg">
   <div class="section-meta">
     <span>VII.</span>
     <span>GET STARTED</span>
@@ -514,5 +538,28 @@
   </p>
 </footer>
 
+<script>
+  // Scroll-triggered reveal animations
+  (function() {
+    const elements = document.querySelectorAll('[data-reveal]:not([data-revealed])');
+    if (elements.length === 0) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      for (const el of elements) el.dataset.revealed = 'true';
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.dataset.revealed = 'true';
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+    );
+    for (const el of elements) observer.observe(el);
+  })();
+</script>
 </body>
 </html>
