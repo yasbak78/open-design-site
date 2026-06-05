@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Design — Official open-source Claude Design alternative</title>
+<style>
+  :root {
+    --primary: #15140F;
+    --surface: #FFFFFF;
+    --text: #111827;
+    --success: #F1E5C5;
+    --warning: #6F2C1F;
+    --danger: #ED6F5C;
+    --neutral: #FFFFFF;
+    --serif: 'Georgia', 'Times New Roman', serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    color: var(--text);
+    background: var(--surface);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  /* Header */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid rgba(21,20,15,0.08);
+    padding: 0 24px;
+  }
+  .header-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .logo { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
+  .nav { display: flex; gap: 24px; list-style: none; }
+  .nav a { font-size: 0.875rem; font-weight: 500; color: var(--text); opacity: 0.7; transition: opacity 0.2s; }
+  .nav a:hover { opacity: 1; }
+  .header-actions { display: flex; gap: 12px; align-items: center; }
+  .header-actions a { font-size: 0.8125rem; font-weight: 500; }
+  .btn-star { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid rgba(21,20,15,0.15); border-radius: 6px; }
+  .btn-download { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--primary); color: var(--surface); border-radius: 6px; }
+  .lang-switch { font-size: 0.75rem; padding: 4px 8px; border: 1px solid rgba(21,20,15,0.15); border-radius: 4px; cursor: pointer; }
+
+  /* Hero */
+  .hero {
+    max-width: 1200px; margin: 0 auto;
+    padding: 80px 24px 60px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+    color: var(--primary);
+  }
+  .hero h1 em { font-style: italic; }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--text);
+    opacity: 0.7;
+    max-width: 600px;
+    margin: 0 auto 32px;
+    line-height: 1.6;
+  }
+  .hero-ctas { display: flex; gap: 16px; justify-content: center; margin-bottom: 48px; }
+  .hero-ctas a {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 24px; border-radius: 8px;
+    font-size: 1rem; font-weight: 600;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .hero-ctas a:hover { transform: translateY(-1px); }
+  .cta-primary { background: var(--primary); color: var(--surface); }
+  .cta-secondary { border: 1px solid rgba(21,20,15,0.2); color: var(--text); }
+  .hero-stats { display: flex; gap: 48px; justify-content: center; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-num { font-family: var(--mono); font-size: 2rem; font-weight: 700; color: var(--primary); }
+  .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5; margin-top: 4px; }
+
+  /* Wire / contributors */
+  .wire {
+    border-top: 1px solid rgba(21,20,15,0.08);
+    border-bottom: 1px solid rgba(21,20,15,0.08);
+    padding: 32px 24px;
+    overflow: hidden;
+  }
+  .wire-header {
+    max-width: 1200px; margin: 0 auto 16px;
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5;
+  }
+  .wire-scroll {
+    max-width: 1200px; margin: 0 auto;
+    display: flex; gap: 24px;
+    animation: scroll 30s linear infinite;
+  }
+  .wire-contrib {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    border: 1px solid rgba(21,20,15,0.08);
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+  .wire-contrib span { opacity: 0.5; }
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* Official sources */
+  .sources {
+    max-width: 1200px; margin: 0 auto;
+    padding: 40px 24px;
+  }
+  .sources-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5; margin-bottom: 16px; }
+  .sources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .source-item {
+    padding: 16px;
+    border: 1px solid rgba(21,20,15,0.08);
+    border-radius: 8px;
+    transition: border-color 0.2s;
+  }
+  .source-item:hover { border-color: var(--primary); }
+  .source-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.4; margin-bottom: 4px; }
+  .source-value { font-size: 0.9375rem; font-weight: 600; }
+
+  /* Sections (magazine-style) */
+  .section {
+    max-width: 1200px; margin: 0 auto;
+    padding: 60px 24px;
+    border-top: 1px solid rgba(21,20,15,0.08);
+  }
+  .section-meta {
+    display: flex; gap: 16px; align-items: center;
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.4;
+    margin-bottom: 24px;
+  }
+  .section-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5; margin-bottom: 12px; }
+  .section h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    max-width: 700px;
+  }
+  .section h2 em { font-style: italic; }
+  .section p {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    opacity: 0.75;
+    max-width: 600px;
+    margin-bottom: 24px;
+  }
+  .read-more {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.9375rem; font-weight: 600;
+    color: var(--primary);
+    border-bottom: 1px solid var(--primary);
+    padding-bottom: 2px;
+  }
+
+  /* Capabilities grid */
+  .cap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+  }
+  .cap-card {
+    padding: 24px;
+    border: 1px solid rgba(21,20,15,0.08);
+    border-radius: 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .cap-card:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(21,20,15,0.06); }
+  .cap-num { font-family: var(--mono); font-size: 0.75rem; opacity: 0.3; margin-bottom: 8px; }
+  .cap-tag { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.4; margin-bottom: 12px; }
+  .cap-card h3 {
+    font-family: var(--serif);
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .cap-card p {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    opacity: 0.6;
+    margin-bottom: 0;
+  }
+
+  /* Agent adapters */
+  .agent-list {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
+  }
+  .agent-tag {
+    padding: 4px 12px;
+    background: var(--success);
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid rgba(21,20,15,0.08);
+    padding: 40px 24px;
+    text-align: center;
+    font-size: 0.8125rem;
+    opacity: 0.4;
+  }
+  .footer a { opacity: 0.7; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .nav { display: none; }
+    .hero { padding: 48px 16px 40px; }
+    .hero-stats { gap: 24px; }
+    .hero-ctas { flex-direction: column; align-items: center; }
+    .section { padding: 40px 16px; }
+    .cap-grid { grid-template-columns: 1fr; }
+    .sources-grid { grid-template-columns: 1fr 1fr; }
+    .header-inner { height: 56px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-inner">
+    <a href="/" class="logo">Open Design</a>
+    <ul class="nav">
+      <li><a href="#product">Product</a></li>
+      <li><a href="#solution">Solution</a></li>
+      <li><a href="#agent">Agent</a></li>
+      <li><a href="#plugins">Plugins</a></li>
+      <li><a href="#resources">Resources</a></li>
+      <li><a href="#community">Community</a></li>
+    </ul>
+    <div class="header-actions">
+      <a href="https://github.com/nexu-io/open-design" class="btn-star" aria-label="Star on GitHub">Star · 59.2K ★</a>
+      <a href="#download" class="btn-download" aria-label="Download desktop app">Download ↓</a>
+      <span class="lang-switch" role="button" aria-label="Switch language">EN</span>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <h1><em>Open Design</em><br>Open-source, local, agent-driven design platform.</h1>
+  <p class="hero-sub">An agent-native alternative to Figma and Claude Design.<br>Desktop-first, connected to 16 coding agents, 150 design systems, Apache-2.0.</p>
+  <div class="hero-ctas">
+    <a href="https://github.com/nexu-io/open-design" class="cta-primary" aria-label="Star us on GitHub">Star us on GitHub →</a>
+    <a href="#download" class="cta-secondary" aria-label="Download desktop app">Download desktop ↓</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">155</div><div class="stat-label">Skills · Shippable</div></div>
+    <div class="stat"><div class="stat-num">150</div><div class="stat-label">Systems · Portable</div></div>
+    <div class="stat"><div class="stat-num">12</div><div class="stat-label">CLI · Bring Your Agent</div></div>
+  </div>
+</section>
+
+<!-- Contributors Wire -->
+<section class="wire" aria-label="Global wire — cities and contributors">
+  <div class="wire-header">FROM THE FIELD · OPEN · 23 CITIES · CONTRIBUTORS</div>
+  <div class="wire-scroll" aria-hidden="true">
+    <a href="#" class="wire-contrib"><span>·</span> @lefarcen <span>188 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @cursoragent <span>116 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @pftom <span>107 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @PerishCode <span>77 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @Nagendhra-web <span>56 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @mrcfps <span>54 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @Sid-Qin <span>47 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @zoeforfun <span>47 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @bulai0408 <span>46 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @xxiaoxiong <span>42 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @YUHAO-corn <span>38 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @you <span>BE NEXT</span></a>
+    <!-- duplicate for seamless loop -->
+    <a href="#" class="wire-contrib"><span>·</span> @lefarcen <span>188 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @cursoragent <span>116 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @pftom <span>107 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @PerishCode <span>77 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @Nagendhra-web <span>56 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @mrcfps <span>54 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @Sid-Qin <span>47 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @zoeforfun <span>47 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @bulai0408 <span>46 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @xxiaoxiong <span>42 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @YUHAO-corn <span>38 COMMITS</span></a>
+    <a href="#" class="wire-contrib"><span>·</span> @you <span>BE NEXT</span></a>
+  </div>
+</section>
+
+<!-- Official Sources -->
+<section class="sources" aria-label="Official Open Design sources">
+  <div class="sources-label">OFFICIAL SOURCE · Nº 00</div>
+  <div class="sources-grid">
+    <a href="https://open-design.ai" class="source-item">
+      <div class="source-label">Official Site</div>
+      <div class="source-value">open-design.ai</div>
+    </a>
+    <a href="https://github.com/nexu-io/open-design" class="source-item">
+      <div class="source-label">Source</div>
+      <div class="source-value">nexu-io/open-design</div>
+    </a>
+    <a href="#" class="source-item">
+      <div class="source-label">Releases</div>
+      <div class="source-value">v0.9.0</div>
+    </a>
+    <a href="#" class="source-item">
+      <div class="source-label">Download</div>
+      <div class="source-value">Desktop · macOS · Win · Linux</div>
+    </a>
+    <a href="#" class="source-item">
+      <div class="source-label">Docs</div>
+      <div class="source-value">README + /quickstart/</div>
+    </a>
+    <a href="#" class="source-item">
+      <div class="source-label">Community</div>
+      <div class="source-value">Discord</div>
+    </a>
+  </div>
+</section>
+
+<!-- Section I: About / Manifesto -->
+<section class="section" id="about">
+  <div class="section-meta">
+    <span>I.</span>
+    <span>ABOUT / MANIFESTO</span>
+    <span>•</span>
+    <span>OPEN DESIGN / VOLUME 01</span>
+    <span>002 / 008</span>
+  </div>
+  <div class="section-label">ABOUT THE STUDIO · Nº 02</div>
+  <h2>We treat <em>your agent</em> as a creative <em>collaborator,</em> not a black box.</h2>
+  <p>The strongest coding agents already live on your laptop. We don't ship one — we wire them into a skill-driven design workflow that runs locally with pnpm tools-dev, deploys the web layer to Vercel, and stays BYOK at every layer.</p>
+  <a href="#" class="read-more">Read our approach →</a>
+  <div style="margin-top: 40px; padding: 24px; border-left: 3px solid var(--success); background: rgba(241,229,197,0.15); border-radius: 0 8px 8px 0;">
+    <p style="font-family: var(--serif); font-size: 1.125rem; font-style: italic; opacity: 0.8; max-width: 500px; margin-bottom: 8px;">From model behavior to visual taste, we prototype the full stack of creative systems.</p>
+    <p style="font-size: 0.8125rem; opacity: 0.4;">Studies in form · perception · machine imagination. (Open Design, MMXXVI)</p>
+  </div>
+  <div style="margin-top: 24px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.3;">
+    Ø RESEARCH · DESIGN · ENGINEERING · REPEAT — STUDIO PRACTICE — EST. MMXXVI
+  </div>
+</section>
+
+<!-- Section II: Capabilities -->
+<section class="section" id="capabilities">
+  <div class="section-meta">
+    <span>II.</span>
+    <span>CAPABILITIES · SKILLS · SYSTEMS</span>
+    <span>•</span>
+    <span>4 SURFACES / 1 LOOP</span>
+    <span>003 / 008</span>
+  </div>
+  <div class="section-label">OPEN DESIGN · CAPABILITIES MATRIX · OD/26</div>
+  <h2>Skills, systems, and surfaces <em>for creative</em> intelligence.</h2>
+  <p>We blend human taste with whichever agent you already trust to ship interfaces, decks, and editorial pages that feel intentional, expressive, and alive.</p>
+  <div class="cap-grid">
+    <div class="cap-card">
+      <div class="cap-num">01</div>
+      <div class="cap-tag">SKILLS</div>
+      <h3>Skills,<br>not plugins</h3>
+      <p>155 file-based SKILL.md bundles. Drop a folder in, restart the daemon, it appears.</p>
+    </div>
+    <div class="cap-card">
+      <div class="cap-num">02</div>
+      <div class="cap-tag">SYSTEMS</div>
+      <h3>Design Systems<br>as Markdown</h3>
+      <p>150 portable DESIGN.md systems — Linear, Vercel, Stripe, Apple, Cursor, Figma…</p>
+    </div>
+    <div class="cap-card">
+      <div class="cap-num">03</div>
+      <div class="cap-tag">ADAPTERS</div>
+      <h3>12 Agent<br>Adapters</h3>
+      <p>Claude · Codex · Gemini · Cursor · Copilot · OpenCode · Devin · Hermes · Pi · Kimi · Kiro · Qwen — auto-detected on $PATH.</p>
+      <div class="agent-list">
+        <span class="agent-tag">Claude</span>
+        <span class="agent-tag">Codex</span>
+        <span class="agent-tag">Gemini</span>
+        <span class="agent-tag">Cursor</span>
+        <span class="agent-tag">Copilot</span>
+        <span class="agent-tag">Hermes</span>
+        <span class="agent-tag">Qwen</span>
+      </div>
+    </div>
+    <div class="cap-card">
+      <div class="cap-num">04</div>
+      <div class="cap-tag">BYOK</div>
+      <h3>BYOK at<br>every layer</h3>
+      <p>Bring Your Own Keys for models, design systems, and agents. No vendor lock-in, no hidden costs.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Section III: Workflow -->
+<section class="section" id="workflow">
+  <div class="section-meta">
+    <span>III.</span>
+    <span>WORKFLOW · THE LOOP</span>
+    <span>•</span>
+    <span>RESEARCH → DESIGN → SHIP</span>
+    <span>004 / 008</span>
+  </div>
+  <div class="section-label">OPEN DESIGN · WORKFLOW · OD/26</div>
+  <h2>One loop. <em>Four surfaces.</em> Human taste in the driver's seat.</h2>
+  <p>Research feeds design. Design feeds engineering. Engineering feeds research. Every cycle sharpens the next — powered by your agent, guided by your taste.</p>
+  <a href="#" class="read-more">Explore the workflow →</a>
+</section>
+
+<!-- Section IV: Agent Adapters Deep Dive -->
+<section class="section" id="agent">
+  <div class="section-meta">
+    <span>IV.</span>
+    <span>AGENT ADAPTERS</span>
+    <span>•</span>
+    <span>CONNECT ANYTHING</span>
+    <span>005 / 008</span>
+  </div>
+  <div class="section-label">OPEN DESIGN · ADAPTERS · OD/26</div>
+  <h2>Whatever agent you trust, <em>it's already connected.</em></h2>
+  <p>Auto-detected on $PATH. No configuration, no plugins, no YAML. Just drop the binary and go. Each adapter speaks the agent's native protocol — MCP, STDIO, or HTTP.</p>
+  <a href="#" class="read-more">See adapter source →</a>
+</section>
+
+<!-- Section V: Design Systems -->
+<section class="section" id="systems">
+  <div class="section-meta">
+    <span>V.</span>
+    <span>DESIGN SYSTEMS</span>
+    <span>•</span>
+    <span>150 AND COUNTING</span>
+    <span>006 / 008</span>
+  </div>
+  <div class="section-label">OPEN DESIGN · SYSTEMS · OD/26</div>
+  <h2>Every major design system, <em>as a single markdown file.</em></h2>
+  <p>Linear, Vercel, Stripe, Apple, Cursor, Figma, Raycast, Arc, Notion — 150 portable DESIGN.md bundles. Copy one, apply it, ship with taste.</p>
+  <a href="#" class="read-more">Browse all systems →</a>
+</section>
+
+<!-- Section VI: Community -->
+<section class="section" id="community">
+  <div class="section-meta">
+    <span>VI.</span>
+    <span>COMMUNITY</span>
+    <span>•</span>
+    <span>OPEN · 23 CITIES</span>
+    <span>007 / 008</span>
+  </div>
+  <div class="section-label">OPEN DESIGN · COMMUNITY · OD/26</div>
+  <h2>Built by <em>contributors</em> across 23 cities.</h2>
+  <p>From Tokyo to San Francisco, from London to São Paulo — a distributed team of designers, engineers, and AI researchers shipping in the open.</p>
+  <a href="#" class="read-more">Join on Discord →</a>
+</section>
+
+<!-- Section VII: Get Started -->
+<section class="section" id="get-started">
+  <div class="section-meta">
+    <span>VII.</span>
+    <span>GET STARTED</span>
+    <span>•</span>
+    <span>QUICKSTART</span>
+    <span>008 / 008</span>
+  </div>
+  <div class="section-label">OPEN DESIGN · START · OD/26</div>
+  <h2>Three commands. <em>Zero config.</em> Your agent, your keys.</h2>
+  <div style="background: var(--primary); color: var(--surface); padding: 24px; border-radius: 12px; font-family: var(--mono); font-size: 0.875rem; max-width: 500px; margin-top: 24px; line-height: 2;">
+    <div>$ npx tools-dev init</div>
+    <div>$ cp .env.example .env</div>
+    <div>$ pnpm dev</div>
+  </div>
+  <a href="#" class="read-more" style="margin-top: 24px; border-color: var(--surface); color: var(--text);">Read the full quickstart →</a>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <p style="margin-bottom: 8px;">Open Design · Apache-2.0 · MMXXVI</p>
+  <p>
+    <a href="https://github.com/nexu-io/open-design">GitHub</a> ·
+    <a href="#">Discord</a> ·
+    <a href="#">X / Twitter</a> ·
+    <a href="https://open-design.ai">open-design.ai</a>
+  </p>
+</footer>
+
+</body>
+</html>
